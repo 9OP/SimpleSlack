@@ -32,7 +32,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <ChakraProvider>
       <QueryClientProvider client={queryClient}>
         <ContextProvider>
-          <Box marginX="auto" width="80%">
+          <Box marginX="auto" width="80%" marginTop="3rem">
             <RequiresClientSideAuth>
               <Component {...pageProps} />
             </RequiresClientSideAuth>

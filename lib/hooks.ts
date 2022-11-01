@@ -1,5 +1,8 @@
 import { useQuery } from "react-query";
-import { whoami } from "./http";
+import { getChannels, whoami } from "./http";
 
-export const useWhoami = (code: string) =>
-  useQuery("whoami", () => whoami(code));
+export const useWhoami = (token: string) =>
+  useQuery("whoami", () => whoami(token));
+
+export const useGetChannels = (token: string) =>
+  useQuery("getChannels", () => getChannels(token));

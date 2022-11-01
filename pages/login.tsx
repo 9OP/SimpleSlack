@@ -5,6 +5,8 @@ import {
   AlertTitle,
   Box,
   Flex,
+  Heading,
+  VStack,
 } from "@chakra-ui/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -61,23 +63,33 @@ export default function Login({
       <Head>
         <title>Login</title>
       </Head>
-      <Box>
-        <SlackLoginButton
-          slackClientId={slackClientId}
-          slackUserScopes={slackUserScopes}
-          onSuccess={getAccessToken}
-          onFailure={setError}
-        />
-        {error && (
-          <Alert status="error" variant="subtle" borderRadius="6px">
-            <AlertIcon />
-            <Flex direction="column">
-              <AlertTitle>Connection failed</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Flex>
-          </Alert>
-        )}
-      </Box>
+      <VStack>
+        <Heading
+          fontSize="5xl"
+          bgGradient="linear(to-l, #7928CA, #FF0080)"
+          bgClip="text"
+          marginBottom="1rem"
+        >
+          Simple Slack
+        </Heading>
+        <Box width="fit-content" margin="auto">
+          <SlackLoginButton
+            slackClientId={slackClientId}
+            slackUserScopes={slackUserScopes}
+            onSuccess={getAccessToken}
+            onFailure={setError}
+          />
+          {error && (
+            <Alert status="error" variant="subtle" borderRadius="6px">
+              <AlertIcon />
+              <Flex direction="column">
+                <AlertTitle>Connection failed</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Flex>
+            </Alert>
+          )}
+        </Box>
+      </VStack>
     </div>
   );
 }

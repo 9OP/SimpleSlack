@@ -1,3 +1,5 @@
+import { Channel } from "./models";
+
 export const getToken = async (
   code: string,
   clientId: string,
@@ -49,4 +51,46 @@ export const whoami = async (
   const name = data?.["user"]?.["name"] || "";
   const ok = data?.["ok"] || false;
   return { name, ok };
+};
+
+export const getChannels = async (
+  token: string
+): Promise<{ channels: Channel[]; ok: boolean }> => {
+  const res = await fetch("https://slack.com/api/conversations.list", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `token=${token}`,
+  });
+  const data = await res.json();
+  /* data format is
+  {
+    "ok": true,
+    "channels": [
+        {
+            "id": "C048TJ48J3Y",
+            "name": "general",
+            "is_channel": true,
+            "is_group": false,
+            "is_private": false,
+            "created": 1667317952,
+            "is_archived": false,
+            "is_general": true,
+            "creator": "U0492L0RGVA",
+            "num_members": 2,
+            .....
+        },
+      ]      
+  }
+  */
+  const ok = data["ok"] || false;
+  const channels: Channel[] = data?.["channels"].map((chan: any) => {
+    const channel: Channel = {
+      id: chan["id"],
+      name: chan["name"],
+      created: new Date(chan["created"] * 1000),
+      numMembers: chan["num_members"],
+    };
+    return channel;
+  });
+  return { channels, ok };
 };
