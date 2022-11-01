@@ -1,4 +1,12 @@
-import { Box, Button, Text } from "@chakra-ui/react";
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Box,
+  Button,
+  Text,
+} from "@chakra-ui/react";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import SlackLogin from "../components/login";
@@ -18,13 +26,13 @@ export function getStaticProps() {
   return { props };
 }
 
-export default function Home({
+export default function Login({
   slackClientId,
   slackClientSecret,
   slackUserScopes,
 }: props) {
-  const [code, setCode] = useState("");
   const [token, setToken] = useState("");
+  const [error, setError] = useState("");
 
   const getAccessToken = async (code: string) => {
     const token = await getToken(code, slackClientId, slackClientSecret);
@@ -34,17 +42,30 @@ export default function Home({
   return (
     <div>
       <Head>
-        <title>Simple Slack</title>
-        <meta name="description" content="simple slack" />
+        <title>Login::SimpleSlack</title>
       </Head>
       <Box>
-        <Text>{code}</Text>
         <SlackLogin
           slackClientId={slackClientId}
           slackUserScopes={slackUserScopes}
           onSuccess={getAccessToken}
-          onFailure={(e: string) => alert(e)}
+          onFailure={setError}
         />
+        {error && (
+          <Alert
+            status="error"
+            variant="subtle"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            textAlign="center"
+            //height="200px"
+          >
+            <AlertIcon />
+            <AlertTitle>Connection failed</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
       </Box>
     </div>
   );
