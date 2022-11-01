@@ -9,7 +9,7 @@ interface props {
   onFailure: (err: string) => void;
 }
 
-const SlackLogin = ({
+const SlackLoginButton = ({
   slackClientId,
   slackUserScopes,
   onSuccess,
@@ -96,4 +96,4 @@ const SlackLogin = ({
   );
 };
 
-export default SlackLogin;
+export default SlackLoginButton;

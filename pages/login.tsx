@@ -4,12 +4,14 @@ import {
   AlertIcon,
   AlertTitle,
   Box,
-  Button,
-  Text,
+  Flex,
 } from "@chakra-ui/react";
 import Head from "next/head";
-import { useEffect, useState } from "react";
-import SlackLogin from "../components/login";
+import { useRouter } from "next/router";
+import { useContext, useEffect, useState } from "react";
+import SlackLoginButton from "../components/slackLoginButton";
+import { AppContext } from "../lib/context";
+import { useWhoami } from "../lib/hooks";
 import { getToken } from "../lib/http";
 
 interface props {
@@ -31,39 +33,48 @@ export default function Login({
   slackClientSecret,
   slackUserScopes,
 }: props) {
-  const [token, setToken] = useState("");
+  const {
+    token: { set: setToken, entity: token },
+  } = useContext(AppContext);
   const [error, setError] = useState("");
+  const { data: user, isLoading } = useWhoami(token);
+  const router = useRouter();
+
+  useEffect(() => {
+    (async function () {
+      if (!isLoading && user?.ok) {
+        router.replace("/");
+      }
+    })();
+  }, [isLoading, user]);
 
   const getAccessToken = async (code: string) => {
     const token = await getToken(code, slackClientId, slackClientSecret);
+    let from = router.asPath.split("#")[1] || "/"; // restore previous location if exists in hash
+    from = from === "/login" ? "/" : from; // prevent redirecting on /login
     setToken(token);
+    router.replace(from);
   };
 
   return (
     <div>
       <Head>
-        <title>Login::SimpleSlack</title>
+        <title>Login</title>
       </Head>
       <Box>
-        <SlackLogin
+        <SlackLoginButton
           slackClientId={slackClientId}
           slackUserScopes={slackUserScopes}
           onSuccess={getAccessToken}
           onFailure={setError}
         />
         {error && (
-          <Alert
-            status="error"
-            variant="subtle"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
-            textAlign="center"
-            //height="200px"
-          >
+          <Alert status="error" variant="subtle" borderRadius="6px">
             <AlertIcon />
-            <AlertTitle>Connection failed</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
+            <Flex direction="column">
+              <AlertTitle>Connection failed</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Flex>
           </Alert>
         )}
       </Box>
