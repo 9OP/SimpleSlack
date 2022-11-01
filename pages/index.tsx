@@ -1,3 +1,4 @@
+import { Box, Button } from '@chakra-ui/react'
 import Head from 'next/head'
 
 export default function Home() {
@@ -6,8 +7,11 @@ export default function Home() {
       <Head>
         <title>Simple Slack</title>
         <meta name="description" content="simple slack" />
-        <link rel="icon" href="/favicon.ico" />
       </Head>
+      <Box>
+        <Button>Click me</Button>
+
+      </Box>
     </div>
   )
 }
