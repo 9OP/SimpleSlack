@@ -94,3 +94,17 @@ export const getChannels = async (
   });
   return { channels, ok };
 };
+
+export const getChannelHistory = async (
+  token: string,
+  channelId: string
+): Promise<any> => {
+  const res = await fetch("https://slack.com/api/conversations.history", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `token=${token}&channel=${channelId}`,
+  });
+  const data = await res.json();
+  console.log(data);
+  return data;
+};

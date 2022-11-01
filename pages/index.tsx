@@ -10,6 +10,7 @@ import {
   ListItem,
   Text,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 import { useContext } from "react";
 import { MemberIcon } from "../components/icons";
 import { AppContext } from "../lib/context";
@@ -17,6 +18,12 @@ import { useGetChannels } from "../lib/hooks";
 import { Channel } from "../lib/models";
 
 const ListChannels = ({ channels }: { channels: Channel[] }) => {
+  const router = useRouter();
+
+  const redirect = (channelId: string) => {
+    router.replace(`/channel/${channelId}`);
+  };
+
   return (
     <Box>
       <List>
@@ -27,6 +34,11 @@ const ListChannels = ({ channels }: { channels: Channel[] }) => {
               borderRadius="6px"
               boxShadow="md"
               marginBottom="1rem"
+              onClick={() => redirect(channel.id)}
+              _hover={{
+                boxShadow: "base",
+                cursor: "pointer",
+              }}
             >
               <HStack justifyContent="space-between">
                 <Text fontSize="lg" fontWeight="semibold">

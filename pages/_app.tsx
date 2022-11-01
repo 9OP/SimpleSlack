@@ -4,6 +4,7 @@ import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
 import { useContext, useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
+import Layout from "../components/layout";
 import { AppContext, ContextProvider } from "../lib/context";
 import { useWhoami } from "../lib/hooks";
 
@@ -32,11 +33,11 @@ export default function App({ Component, pageProps }: AppProps) {
     <ChakraProvider>
       <QueryClientProvider client={queryClient}>
         <ContextProvider>
-          <Box marginX="auto" width="80%" marginTop="3rem">
+          <Layout>
             <RequiresClientSideAuth>
               <Component {...pageProps} />
             </RequiresClientSideAuth>
-          </Box>
+          </Layout>
         </ContextProvider>
       </QueryClientProvider>
     </ChakraProvider>
