@@ -1,4 +1,5 @@
 import { Button } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 import React from "react";
 import { SlackIcon } from "./icons";
 
@@ -21,7 +22,7 @@ const SlackLoginButton = ({
     const left = screen.width / 2 - width / 2;
     const top = screen.height / 2 - height / 2;
 
-    const url = `https://slack.com/oauth/authorize/?client_id=${slackClientId}&scope=${slackUserScopes}`;
+    const url = `https://slack.com/oauth/authorize/?client_id=${slackClientId}&scope=${slackUserScopes}&redirect=${window.location.host}`;
 
     return window.open(
       url,

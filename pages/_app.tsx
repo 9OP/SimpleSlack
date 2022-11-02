@@ -9,20 +9,6 @@ import { ContextProvider } from "../lib/context";
 
 const queryClient = new QueryClient();
 
-// const RequiresClientSideAuth = ({ children }: { children: JSX.Element }) => {
-//   const router = useRouter();
-//   const { data: user, isLoading } = useWhoami();
-
-//   useEffect(() => {
-//     if (!isLoading && !user?.ok) {
-//       const location = router.pathname;
-//       router.replace({ pathname: "/login" });
-//     }
-//   }, [isLoading, user, router]);
-
-//   return <>{isLoading ? <Spinner></Spinner> : children}</>;
-// };
-
 export type NextApplicationPage<P = any, IP = P> = NextPage<P, IP> & {
   requireAuth?: boolean;
 };
