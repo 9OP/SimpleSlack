@@ -61,7 +61,7 @@ export const whoami = async (
 export const getChannels = async (
   token: string
 ): Promise<{ channels: { [id: string]: Channel }; ok: boolean }> => {
-  const res = await fetch("https://slack.com/api/conversations.list", {
+  const res = await fetch("https://slack.com/api/users.conversations", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: `token=${token}`,
@@ -95,7 +95,6 @@ export const getChannels = async (
         id: chan["id"],
         name: chan["name"],
         created: new Date(chan["created"] * 1000),
-        numMembers: chan["num_members"],
       };
       acc[channel.id] = channel;
       return acc;

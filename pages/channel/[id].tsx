@@ -103,7 +103,7 @@ function Channel() {
 
   return (
     <Flex height="100%" flexDirection="column">
-      <VStack alignItems="flex-start" spacing="0">
+      <VStack alignItems="flex-start" spacing="0" marginBottom="2rem">
         <Link href="/">
           <HStack
             color="blue.500"
@@ -119,7 +119,7 @@ function Channel() {
       </VStack>
 
       <Flex flexDirection="column" justifyContent="space-between" height="100%">
-        <Box height="40rem"  overflow="auto">
+        <Box height="35rem"  overflow="auto">
           <ListMessages
             messages={historyData?.messages || []}
             members={membersData?.members || {}}

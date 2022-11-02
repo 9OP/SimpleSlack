@@ -4,12 +4,12 @@ import { FaSlack, FaUser } from "react-icons/fa";
 import { BiArrowBack } from "react-icons/bi";
 
 const iconFactory = (icon: IconType) => {
-  return (props: IconProps) => {
+  const IconFactory = (props: IconProps) => {
     const styles = useStyleConfig("Icon");
     return <Icon __css={styles} as={icon} {...props} />;
   };
+  return IconFactory
 };
 
 export const SlackIcon = iconFactory(FaSlack);
-export const MemberIcon = iconFactory(FaUser);
 export const ArrowBack = iconFactory(BiArrowBack);

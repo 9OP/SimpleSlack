@@ -12,7 +12,6 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { MemberIcon } from "../components/icons";
 import { useGetChannels, useLogout } from "../lib/hooks";
 import { Channel } from "../lib/models";
 
@@ -39,15 +38,9 @@ const ListChannels = ({ channels }: { channels: Channel[] }) => {
                 cursor: "pointer",
               }}
             >
-              <HStack justifyContent="space-between">
-                <Text fontSize="lg" fontWeight="semibold">
-                  {channel.name}
-                </Text>
-                <Text color="gray.600" fontWeight="bold">
-                  {channel.numMembers}
-                  <MemberIcon marginLeft="1rem" fontSize="1rem" />
-                </Text>
-              </HStack>
+              <Text fontSize="lg" fontWeight="semibold">
+                {channel.name}
+              </Text>
 
               <Text fontSize="sm" color="gray.600">
                 {channel.created.toLocaleDateString()}
