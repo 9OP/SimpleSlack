@@ -61,7 +61,7 @@ function ListMessages({
   );
 }
 
-export default function Channel() {
+function Channel() {
   const router = useRouter();
   const channelId = router.query.id as string;
   const { data: membersData } = useGetMembers();
@@ -77,7 +77,7 @@ export default function Channel() {
   const sendMessageCallback = useCallback(async () => {
     await sendMessage({ message });
     setMessage("");
-  }, [message]);
+  }, [message, setMessage, sendMessage]);
 
   const onMessageChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
     e.preventDefault();
@@ -126,3 +126,5 @@ export default function Channel() {
     </Box>
   );
 }
+Channel.requireAuth = true;
+export default Channel;

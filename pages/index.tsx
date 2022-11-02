@@ -59,7 +59,7 @@ const ListChannels = ({ channels }: { channels: Channel[] }) => {
   );
 };
 
-export default function Home() {
+function Home() {
   const { data, isLoading } = useGetChannels();
 
   if (isLoading) {
@@ -89,3 +89,6 @@ export default function Home() {
     </Box>
   );
 }
+
+Home.requireAuth = true;
+export default Home;

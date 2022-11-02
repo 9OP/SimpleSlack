@@ -49,12 +49,12 @@ export default function Login({
         router.replace("/");
       }
     })();
-  }, [isLoading, user]);
+  }, [isLoading, user, router]);
 
   const getTokenCallback = useCallback(async (code: string) => {
     await getToken({ code });
     router.replace("/");
-  }, []);
+  }, [getToken, router]);
 
   return (
     <div>
