@@ -67,9 +67,7 @@ const SlackLoginButton = ({
             if (slackCode) {
               return onSuccess({ code: slackCode });
             }
-            if (onFailure) {
-              onFailure(query?.get("error") || "");
-            }
+            return onFailure(query?.get("error") || "");
           }
         }
       } catch (err) {

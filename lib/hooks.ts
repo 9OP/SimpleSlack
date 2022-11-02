@@ -41,7 +41,6 @@ export const useGetToken = (
       getToken(arg.code, slackClientId, slackClientSecret),
     {
       onSuccess: async (fetchedToken) => {
-        queryClient.invalidateQueries({ queryKey: ["whoami"] });
         token.set(fetchedToken);
         const user = await whoami(fetchedToken);
         if (user.ok) {
