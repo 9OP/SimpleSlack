@@ -13,7 +13,14 @@ import {
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { ChangeEvent, useCallback, useMemo, useState } from "react";
+import {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { ArrowBack } from "../../components/icons";
 import {
   useGetChannelHistory,
@@ -30,10 +37,16 @@ function ListMessages({
   messages: Message[];
   members: { [id: string]: Member };
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+
   const sortedMessages = useMemo(
     () => messages.sort((a, b) => a.ts.getTime() - b.ts.getTime()),
     [messages]
   );
+
+  useEffect(() => {
+    ref.current?.scrollIntoView({ behavior: "smooth" });
+  }, [sortedMessages]);
 
   return (
     <List>
@@ -42,7 +55,8 @@ function ListMessages({
           <Box
             borderRadius="6px"
             marginBottom="1rem"
-            boxShadow="base"
+            borderWidth="1px"
+            borderColor="gray.100"
             padding="1rem"
           >
             <Text
@@ -59,6 +73,7 @@ function ListMessages({
           </Box>
         </ListItem>
       ))}
+      <div ref={ref}></div>
     </List>
   );
 }
@@ -87,7 +102,7 @@ function Channel() {
   }, []);
 
   return (
-    <Box height="90%">
+    <Flex height="100%" flexDirection="column">
       <VStack alignItems="flex-start" spacing="0">
         <Link href="/">
           <HStack
@@ -103,26 +118,27 @@ function Channel() {
         <Heading>{channel?.name}</Heading>
       </VStack>
 
-      <Flex flexDirection="column" justifyContent="space-between" height="90%">
-        <Box  overflow="scroll">
+      <Flex flexDirection="column" justifyContent="space-between" height="100%">
+        <Box height="40rem"  overflow="auto">
           <ListMessages
             messages={historyData?.messages || []}
             members={membersData?.members || {}}
           />
         </Box>
-        <VStack w="100%" height="fit-content">
+        <Box w="100%">
           <Button
             colorScheme="blue"
             variant="outline"
             w="100%"
             onClick={sendMessageCallback}
+            marginBottom="1rem"
           >
             Send message
           </Button>
           <Textarea value={message} onChange={onMessageChange}></Textarea>
-        </VStack>
+        </Box>
       </Flex>
-    </Box>
+    </Flex>
   );
 }
 Channel.requireAuth = true;
