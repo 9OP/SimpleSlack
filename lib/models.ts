@@ -10,3 +10,9 @@ export interface Message {
   userId: string;
   text: string;
 }
+
+export interface Member {
+  id: string;
+  name: string;
+  admin: boolean;
+}

@@ -1,4 +1,11 @@
-import { Channel, Message } from "./models";
+import { Channel, Member, Message } from "./models";
+
+// Why do I use POST request instead of
+// GET request with `Authorization: 'Bearer {code}'` ?
+//
+// Because Slack API does not respond to CORS preflight.
+// reference: https://stackoverflow.com/questions/68349334/slack-api-cors-error-with-axios-in-vue-js
+// Slack did not think we could use their API from a (CORS restricted) web client ?
 
 export const getToken = async (
   code: string,
@@ -8,7 +15,8 @@ export const getToken = async (
   const url = `https://slack.com/api/oauth.access?code=${code}&client_id=${clientId}&client_secret=${clientSecret}`;
   const res = await fetch(url, { method: "GET" });
   const data = await res.json();
-  /* data format:
+  /* https://api.slack.com/methods/oauth.access
+  Data format:
   {
     ok: true;
     access_token: "xoxp-4303267171301-4308680866996-4319917031985-d0d71a6b88ca1d2aca3ba3e70cf57fba";
@@ -25,17 +33,14 @@ export const getToken = async (
 export const whoami = async (
   token: string
 ): Promise<{ name: string; ok: boolean }> => {
-  // GET request with `Authorization: 'Bearer {code}'`
-  // Does not work, as Slack API does not respond to CORS preflight.
-  // reference: https://stackoverflow.com/questions/68349334/slack-api-cors-error-with-axios-in-vue-js
-  // Good job Slack 👏
   const res = await fetch("https://slack.com/api/users.identity", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: `token=${token}`,
   });
   const data = await res.json();
-  /* data format:
+  /* https://api.slack.com/methods/users.identity
+  Data format:
   {
     ok: true,
     user: {
@@ -62,7 +67,8 @@ export const getChannels = async (
     body: `token=${token}`,
   });
   const data = await res.json();
-  /* data format is
+  /* https://api.slack.com/methods/conversations.list
+  Data format:
   {
     "ok": true,
     "channels": [
@@ -109,7 +115,8 @@ export const getChannelHistory = async (
     body: `token=${token}&channel=${channelId}`,
   });
   const data = await res.json();
-  /* data format:
+  /* https://api.slack.com/methods/conversations.history
+  Data format:
   {
     "ok": true,
     "messages": [
@@ -148,4 +155,63 @@ export const getChannelHistory = async (
     return message;
   });
   return { messages, ok };
+};
+
+export const getMembers = async (
+  token: string
+): Promise<{ members: { [id: string]: Member }; ok: boolean }> => {
+  const res = await fetch("https://slack.com/api/users.list", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `token=${token}`,
+  });
+  const data = await res.json();
+  /* https://api.slack.com/methods/users.list
+  Data format:
+  {
+    "ok": true,
+    "members": [
+        {
+            "id": "USLACKBOT",
+            "team_id": "T048X7V518V",
+            "name": "slackbot",
+            "deleted": false,
+            "color": "757575",
+            "real_name": "Slackbot",
+            "tz": "America/Los_Angeles",
+            "tz_label": "Pacific Daylight Time",
+            "tz_offset": -25200,
+            "is_admin": false,
+            "is_owner": false,
+            "is_primary_owner": false,
+            "is_restricted": false,
+            "is_ultra_restricted": false,
+            "is_bot": false,
+            "is_app_user": false,
+            "updated": 0,
+            "is_email_confirmed": false,
+            "who_can_share_contact_card": "EVERYONE"
+        },
+        ... d
+    ],
+    "cache_ts": 1667379845,
+    "response_metadata": {
+        "next_cursor": ""
+    }
+  }
+  */
+  const ok = data["ok"] || false;
+  const members: { [id: string]: Member } = data["members"].reduce(
+    (acc: { [id: string]: Member }, mem: any) => {
+      const member: Member = {
+        id: mem["id"],
+        name: mem["real_name"],
+        admin: mem["is_admin"],
+      };
+      acc[member.id] = member;
+      return acc;
+    },
+    {}
+  );
+  return { members, ok };
 };

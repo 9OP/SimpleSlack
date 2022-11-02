@@ -20,7 +20,7 @@ import { Channel } from "../lib/models";
 const ListChannels = ({ channels }: { channels: Channel[] }) => {
   const router = useRouter();
 
-  const redirect = (channelId: string) => {
+  const openChannel = (channelId: string) => {
     router.replace(`/channel/${channelId}`);
   };
 
@@ -34,7 +34,7 @@ const ListChannels = ({ channels }: { channels: Channel[] }) => {
               borderRadius="6px"
               boxShadow="md"
               marginBottom="1rem"
-              onClick={() => redirect(channel.id)}
+              onClick={() => openChannel(channel.id)}
               _hover={{
                 boxShadow: "base",
                 cursor: "pointer",

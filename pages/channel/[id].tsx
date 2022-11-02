@@ -14,10 +14,20 @@ import { useRouter } from "next/router";
 import { useContext, useMemo, useState } from "react";
 import { ArrowBack } from "../../components/icons";
 import { AppContext } from "../../lib/context";
-import { useGetChannelHistory, useGetChannels } from "../../lib/hooks";
-import { Message } from "../../lib/models";
+import {
+  useGetChannelHistory,
+  useGetChannels,
+  useGetMembers,
+} from "../../lib/hooks";
+import { Member, Message } from "../../lib/models";
 
-function ListMessages({ messages }: { messages: Message[] }) {
+function ListMessages({
+  messages,
+  members,
+}: {
+  messages: Message[];
+  members: { [id: string]: Member };
+}) {
   return (
     <List>
       {messages.map((message, i) => (
@@ -28,8 +38,12 @@ function ListMessages({ messages }: { messages: Message[] }) {
             boxShadow="base"
             padding="1rem"
           >
-            <Text fontWeight="semibold" fontSize="md">
-              {message.userId}
+            <Text
+              fontWeight="semibold"
+              fontSize="md"
+              color={members[message.userId]?.admin ? "blue.500" : "black"}
+            >
+              {members[message.userId]?.name || message.userId}
             </Text>
             <Text fontWeight="semibold" fontSize="sm" marginBottom="1rem">
               {message.ts.toLocaleTimeString()}
@@ -46,13 +60,14 @@ export default function Channel() {
   const router = useRouter();
   const id = router.query.id as string;
   const { token } = useContext(AppContext);
-  const { data: channels } = useGetChannels(token.entity);
-  const { data: history } = useGetChannelHistory(token.entity, id);
+  const { data: membersData } = useGetMembers(token.entity);
+  const { data: channelsData } = useGetChannels(token.entity);
+  const { data: historyData } = useGetChannelHistory(token.entity, id);
   const [message, setMessage] = useState("");
 
   const channel = useMemo(() => {
-    return channels?.channels[id];
-  }, [channels, id]);
+    return channelsData?.channels[id];
+  }, [channelsData, id]);
 
   return (
     <Box>
@@ -77,7 +92,10 @@ export default function Channel() {
         flexDirection="column"
         justifyContent="space-between"
       >
-        <ListMessages messages={history?.messages || []} />
+        <ListMessages
+          messages={historyData?.messages || []}
+          members={membersData?.members || {}}
+        />
         <VStack w="100%">
           <Button colorScheme="blue" variant="outline" w="100%">
             Send message
