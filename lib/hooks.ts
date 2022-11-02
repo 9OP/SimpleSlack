@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { useContext } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { AppContext } from "./context";
@@ -9,6 +10,19 @@ import {
   sendMessage,
   whoami,
 } from "./http";
+
+export const useLogout = () => {
+  const queryClient = useQueryClient();
+  const { token } = useContext(AppContext);
+  const router = useRouter();
+
+  const logout = async () => {
+    token.set("");
+    await queryClient.invalidateQueries({ queryKey: ["whoami"] });
+    router.push("/login");
+  };
+  return { logout };
+};
 
 export const useWhoami = () => {
   const { token } = useContext(AppContext);

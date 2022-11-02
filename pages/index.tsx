@@ -3,6 +3,7 @@ import {
   AlertIcon,
   AlertTitle,
   Box,
+  Button,
   Flex,
   Heading,
   HStack,
@@ -12,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { MemberIcon } from "../components/icons";
-import { useGetChannels } from "../lib/hooks";
+import { useGetChannels, useLogout } from "../lib/hooks";
 import { Channel } from "../lib/models";
 
 const ListChannels = ({ channels }: { channels: Channel[] }) => {
@@ -61,6 +62,7 @@ const ListChannels = ({ channels }: { channels: Channel[] }) => {
 
 function Home() {
   const { data, isLoading } = useGetChannels();
+  const { logout } = useLogout();
 
   if (isLoading) {
     return <Box>Loading channels...</Box>;
@@ -77,14 +79,24 @@ function Home() {
 
   return (
     <Box>
-      <Heading
-        fontSize="3xl"
-        marginBottom="1rem"
-        bgGradient="linear(to-l, teal.500, blue.500)"
-        bgClip="text"
-      >
-        Channels
-      </Heading>
+      <HStack justifyContent="space-between" alignItems="center">
+        <Heading
+          fontSize="3xl"
+          marginBottom="1rem"
+          bgGradient="linear(to-l, teal.500, blue.500)"
+          bgClip="text"
+        >
+          Channels
+        </Heading>
+        <Button
+          variant="outline"
+          colorScheme="orange"
+          size="sm"
+          onClick={logout}
+        >
+          Logout
+        </Button>
+      </HStack>
       <ListChannels channels={Object.values(data?.channels || [])} />
     </Box>
   );
