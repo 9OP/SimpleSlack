@@ -1,7 +1,10 @@
 import { Button } from "@chakra-ui/react";
-import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React from "react";
 import { SlackIcon } from "./icons";
+
+const getRedirectUri = (): string => {
+  return window.location.href.split("/").slice(0, -1).join("/");
+};
 
 interface props {
   slackClientId: string;
@@ -22,18 +25,14 @@ const SlackLoginButton = ({
   onSuccess,
   onFailure,
 }: props) => {
-  const [redirectUri, setRedirectUri] = useState("");
-
   function openPopup() {
     const width = 400;
     const height = 600;
     const left = screen.width / 2 - width / 2;
     const top = screen.height / 2 - height / 2;
 
-    const uri = window.location.href.split("/").slice(0, -1).join("/");
-    setRedirectUri(uri);
-
-    const url = `https://slack.com/oauth/authorize/?client_id=${slackClientId}&scope=${slackUserScopes}&redirect_uri=${uri}`;
+    const redirectUri = getRedirectUri();
+    const url = `https://slack.com/oauth/authorize/?client_id=${slackClientId}&scope=${slackUserScopes}&redirect_uri=${redirectUri}`;
 
     return window.open(
       url,
@@ -75,6 +74,7 @@ const SlackLoginButton = ({
             const slackCode = query.get("code");
             closeDialog();
             if (slackCode) {
+              const redirectUri = getRedirectUri();
               return onSuccess({ code: slackCode, redirectUri: redirectUri });
             }
             if (onFailure) {
