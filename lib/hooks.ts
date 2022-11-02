@@ -37,8 +37,8 @@ export const useGetToken = (
   const { token } = useContext(AppContext);
 
   return useMutation(
-    (arg: { code: string }) =>
-      getToken(arg.code, slackClientId, slackClientSecret),
+    (arg: { code: string, redirectUri: string }) =>
+      getToken(arg.code, arg.redirectUri, slackClientId, slackClientSecret),
     {
       onSuccess: async (fetchedToken) => {
         queryClient.invalidateQueries({ queryKey: ["whoami"] });

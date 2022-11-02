@@ -9,10 +9,11 @@ import { Channel, Member, Message } from "./models";
 
 export const getToken = async (
   code: string,
+  redirectUri: string,
   clientId: string,
   clientSecret: string
 ): Promise<string> => {
-  const url = `https://slack.com/api/oauth.access?code=${code}&client_id=${clientId}&client_secret=${clientSecret}`;
+  const url = `https://slack.com/api/oauth.access?code=${code}&client_id=${clientId}&client_secret=${clientSecret}&redirect_uri=${redirectUri}`;
   const res = await fetch(url, { method: "GET" });
   const data = await res.json();
   /* https://api.slack.com/methods/oauth.access

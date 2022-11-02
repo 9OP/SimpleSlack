@@ -51,8 +51,8 @@ export default function Login({
     })();
   }, [isLoading, user, router]);
 
-  const getTokenCallback = useCallback(async (code: string) => {
-    await getToken({ code });
+  const getTokenCallback = useCallback(async ({code, redirectUri}: {code: string, redirectUri: string}) => {
+    await getToken({ code, redirectUri });
     router.replace("/");
   }, [getToken, router]);
 

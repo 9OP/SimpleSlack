@@ -1,12 +1,18 @@
 import { Button } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useState } from "react";
 import { SlackIcon } from "./icons";
 
 interface props {
   slackClientId: string;
   slackUserScopes: string;
-  onSuccess: (code: string) => void;
+  onSuccess: ({
+    code,
+    redirectUri,
+  }: {
+    code: string;
+    redirectUri: string;
+  }) => void;
   onFailure: (err: string) => void;
 }
 
@@ -16,14 +22,18 @@ const SlackLoginButton = ({
   onSuccess,
   onFailure,
 }: props) => {
+  const [redirectUri, setRedirectUri] = useState("");
+
   function openPopup() {
     const width = 400;
     const height = 600;
     const left = screen.width / 2 - width / 2;
     const top = screen.height / 2 - height / 2;
 
-    const redirectUri = window.location.href.split("/").slice(0,-1).join("/")
-    const url = `https://slack.com/oauth/authorize/?client_id=${slackClientId}&scope=${slackUserScopes}&redirect_uri=${redirectUri}`;
+    const uri = window.location.href.split("/").slice(0, -1).join("/");
+    setRedirectUri(uri);
+
+    const url = `https://slack.com/oauth/authorize/?client_id=${slackClientId}&scope=${slackUserScopes}&redirect_uri=${uri}`;
 
     return window.open(
       url,
@@ -65,7 +75,7 @@ const SlackLoginButton = ({
             const slackCode = query.get("code");
             closeDialog();
             if (slackCode) {
-              return onSuccess(slackCode);
+              return onSuccess({ code: slackCode, redirectUri: redirectUri });
             }
             if (onFailure) {
               onFailure(query?.get("error") || "");
@@ -80,7 +90,7 @@ const SlackLoginButton = ({
         // As long as the popup window is the slack oauth consent screen page, the polling is failing.
         // Once the user accept the consent screen, the popup windows redirect to "http://localhost:3000"
         // with a code in query parameter. This code is necessay to request the access token for the user.
-        console.error(err)
+        console.error(err);
       }
     }, 500);
   }
