@@ -29,9 +29,10 @@ function ListMessages({
   messages: Message[];
   members: { [id: string]: Member };
 }) {
-  const sortedMessages = useMemo(() => {
-    return messages.sort((a, b) => b.ts.getTime() - a.ts.getTime());
-  }, [messages]);
+  const sortedMessages = useMemo(
+    () => messages.sort((a, b) => b.ts.getTime() - a.ts.getTime()),
+    [messages]
+  );
 
   return (
     <List>

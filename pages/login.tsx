@@ -52,10 +52,8 @@ export default function Login({
 
   const getAccessToken = async (code: string) => {
     const token = await getToken(code, slackClientId, slackClientSecret);
-    let from = router.asPath.split("#")[1] || "/"; // restore previous location if exists in hash
-    from = from === "/login" ? "/" : from; // prevent redirecting on /login
     setToken(token);
-    router.replace(from);
+    router.replace("/");
   };
 
   return (

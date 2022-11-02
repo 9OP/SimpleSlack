@@ -8,14 +8,18 @@ import {
 } from "./http";
 
 export const useWhoami = (token: string) =>
-  useQuery("whoami", () => whoami(token));
+  // Stale after 500ms
+  useQuery("whoami", () => whoami(token), { staleTime: 500 });
 
 export const useGetChannels = (token: string) =>
   useQuery("getChannels", () => getChannels(token));
 
 export const useGetChannelHistory = (token: string, channelId: string) =>
-  useQuery(`getChannelHistory-${channelId}`, () =>
-    getChannelHistory(token, channelId)
+  useQuery(
+    `getChannelHistory-${channelId}`,
+    () => getChannelHistory(token, channelId),
+    // Refetch every 1s
+    { refetchInterval: 1000 }
   );
 
 export const useGetMembers = (token: string) =>

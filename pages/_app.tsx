@@ -18,10 +18,7 @@ const RequiresClientSideAuth = ({ children }: { children: JSX.Element }) => {
   useEffect(() => {
     if (!isLoading && !user?.ok) {
       const location = router.pathname;
-      router.replace({
-        pathname: "/login",
-        hash: location, // store previous location in hash
-      });
+      router.replace({ pathname: "/login" });
     }
   }, [isLoading, user]);
 
