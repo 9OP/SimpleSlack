@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  basePath: '/simple-slack',
+  basePath: '/simple-slack/',
   assetPrefix: '/simple-slack/',
 };
 
