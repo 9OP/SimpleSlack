@@ -66,7 +66,7 @@ export const useGetChannelHistory = (channelId: string) => {
     // Polling refetch every 1s
     // not optimized, but the load is absorbed by
     // the slack API, so I guess this is ok.
-    // { refetchInterval: 1000 }
+    { refetchInterval: 1000 }
   );
 };
 
