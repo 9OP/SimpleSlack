@@ -51,10 +51,13 @@ export default function Login({
     })();
   }, [isLoading, user, router]);
 
-  const getTokenCallback = useCallback(async ({code, redirectUri}: {code: string, redirectUri: string}) => {
-    await getToken({ code, redirectUri });
-    router.replace("/");
-  }, [getToken, router]);
+  const getTokenCallback = useCallback(
+    async ({ code }: { code: string }) => {
+      await getToken({ code });
+      router.replace("/");
+    },
+    [getToken, router]
+  );
 
   return (
     <div>

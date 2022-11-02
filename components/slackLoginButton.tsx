@@ -1,21 +1,12 @@
 import { Button } from "@chakra-ui/react";
 import React from "react";
+import { getRedirectUri } from "../lib/utils";
 import { SlackIcon } from "./icons";
-
-const getRedirectUri = (): string => {
-  return window.location.href.split("/").slice(0, -1).join("/");
-};
 
 interface props {
   slackClientId: string;
   slackUserScopes: string;
-  onSuccess: ({
-    code,
-    redirectUri,
-  }: {
-    code: string;
-    redirectUri: string;
-  }) => void;
+  onSuccess: ({ code }: { code: string }) => void;
   onFailure: (err: string) => void;
 }
 
@@ -74,8 +65,7 @@ const SlackLoginButton = ({
             const slackCode = query.get("code");
             closeDialog();
             if (slackCode) {
-              const redirectUri = getRedirectUri();
-              return onSuccess({ code: slackCode, redirectUri: redirectUri });
+              return onSuccess({ code: slackCode });
             }
             if (onFailure) {
               onFailure(query?.get("error") || "");
