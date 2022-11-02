@@ -1,34 +1,73 @@
+import { useContext } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
+import { AppContext } from "./context";
 import {
   getChannelHistory,
   getChannels,
   getMembers,
+  getToken,
   sendMessage,
   whoami,
 } from "./http";
 
-export const useWhoami = (token: string) =>
-  // Stale after 500ms
-  useQuery("whoami", () => whoami(token), { staleTime: 500 });
+export const useWhoami = () => {
+  const { token } = useContext(AppContext);
+  return useQuery("whoami", () => whoami(token.entity), { staleTime: 0 });
+};
 
-export const useGetChannels = (token: string) =>
-  useQuery("getChannels", () => getChannels(token));
-
-export const useGetChannelHistory = (token: string, channelId: string) =>
-  useQuery(
-    `getChannelHistory-${channelId}`,
-    () => getChannelHistory(token, channelId),
-    // Refetch every 1s
-    { refetchInterval: 1000 }
-  );
-
-export const useGetMembers = (token: string) =>
-  useQuery("getMembers", () => getMembers(token));
-
-export const useSendMessage = (token: string, channelId: string) => {
+export const useGetToken = (
+  slackClientId: string,
+  slackClientSecret: string
+) => {
   const queryClient = useQueryClient();
+  const { token } = useContext(AppContext);
+
   return useMutation(
-    (arg: { message: string }) => sendMessage(token, channelId, arg.message),
+    (arg: { code: string }) =>
+      getToken(arg.code, slackClientId, slackClientSecret),
+    {
+      onSuccess: async (fetchedToken) => {
+        queryClient.invalidateQueries({ queryKey: ["whoami"] });
+        token.set(fetchedToken);
+        const user = await whoami(fetchedToken);
+        if (user.ok) {
+          queryClient.setQueryData("whoami", user.name);
+        }
+      },
+    }
+  );
+};
+
+export const useGetChannels = () => {
+  const { token } = useContext(AppContext);
+  return useQuery("getChannels", () => getChannels(token.entity));
+};
+
+export const useGetChannelHistory = (channelId: string) => {
+  const { token } = useContext(AppContext);
+
+  return useQuery(
+    `getChannelHistory-${channelId}`,
+    () => getChannelHistory(token.entity, channelId)
+    // Polling refetch every 1s
+    // not optimized, but the load is absorbed by
+    // the slack API, so I guess this is ok.
+    //{ refetchInterval: 1000 }
+  );
+};
+
+export const useGetMembers = () => {
+  const { token } = useContext(AppContext);
+  return useQuery("getMembers", () => getMembers(token.entity));
+};
+
+export const useSendMessage = (channelId: string) => {
+  const queryClient = useQueryClient();
+  const { token } = useContext(AppContext);
+
+  return useMutation(
+    (arg: { message: string }) =>
+      sendMessage(token.entity, channelId, arg.message),
     {
       onSuccess: () => {
         queryClient.invalidateQueries({

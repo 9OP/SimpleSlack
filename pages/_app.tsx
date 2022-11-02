@@ -2,18 +2,17 @@
 import { Box, ChakraProvider, Spinner } from "@chakra-ui/react";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import Layout from "../components/layout";
-import { AppContext, ContextProvider } from "../lib/context";
+import { ContextProvider } from "../lib/context";
 import { useWhoami } from "../lib/hooks";
 
 const queryClient = new QueryClient();
 
 const RequiresClientSideAuth = ({ children }: { children: JSX.Element }) => {
   const router = useRouter();
-  const { token } = useContext(AppContext);
-  const { data: user, isLoading } = useWhoami(token?.entity);
+  const { data: user, isLoading } = useWhoami();
 
   useEffect(() => {
     if (!isLoading && !user?.ok) {

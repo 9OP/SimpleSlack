@@ -11,9 +11,8 @@ import {
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useContext, useMemo, useState } from "react";
+import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { ArrowBack } from "../../components/icons";
-import { AppContext } from "../../lib/context";
 import {
   useGetChannelHistory,
   useGetChannels,
@@ -30,7 +29,7 @@ function ListMessages({
   members: { [id: string]: Member };
 }) {
   const sortedMessages = useMemo(
-    () => messages.sort((a, b) => b.ts.getTime() - a.ts.getTime()),
+    () => messages.sort((a, b) => a.ts.getTime() - b.ts.getTime()),
     [messages]
   );
 
@@ -64,17 +63,26 @@ function ListMessages({
 
 export default function Channel() {
   const router = useRouter();
-  const id = router.query.id as string;
-  const { token } = useContext(AppContext);
-  const { data: membersData } = useGetMembers(token.entity);
-  const { data: channelsData } = useGetChannels(token.entity);
-  const { data: historyData } = useGetChannelHistory(token.entity, id);
-  const { mutateAsync: sendMessage } = useSendMessage(token.entity, id);
+  const channelId = router.query.id as string;
+  const { data: membersData } = useGetMembers();
+  const { data: channelsData } = useGetChannels();
+  const { data: historyData } = useGetChannelHistory(channelId);
+  const { mutateAsync: sendMessage } = useSendMessage(channelId);
   const [message, setMessage] = useState("");
 
   const channel = useMemo(() => {
-    return channelsData?.channels[id];
-  }, [channelsData, id]);
+    return channelsData?.channels[channelId];
+  }, [channelsData, channelId]);
+
+  const sendMessageCallback = useCallback(async () => {
+    await sendMessage({ message });
+    setMessage("");
+  }, [message]);
+
+  const onMessageChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
+    e.preventDefault();
+    setMessage(e.target.value);
+  }, []);
 
   return (
     <Box>
@@ -108,14 +116,11 @@ export default function Channel() {
             colorScheme="blue"
             variant="outline"
             w="100%"
-            onClick={() => sendMessage({ message })}
+            onClick={sendMessageCallback}
           >
             Send message
           </Button>
-          <Textarea
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          ></Textarea>
+          <Textarea value={message} onChange={onMessageChange}></Textarea>
         </VStack>
       </Box>
     </Box>

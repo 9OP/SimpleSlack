@@ -10,11 +10,9 @@ import {
 } from "@chakra-ui/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import SlackLoginButton from "../components/slackLoginButton";
-import { AppContext } from "../lib/context";
-import { useWhoami } from "../lib/hooks";
-import { getToken } from "../lib/http";
+import { useGetToken, useWhoami } from "../lib/hooks";
 
 interface props {
   slackClientId: string;
@@ -35,14 +33,17 @@ export default function Login({
   slackClientSecret,
   slackUserScopes,
 }: props) {
-  const {
-    token: { set: setToken, entity: token },
-  } = useContext(AppContext);
   const [error, setError] = useState("");
-  const { data: user, isLoading } = useWhoami(token);
+  const { data: user, isLoading } = useWhoami();
+  const { mutateAsync: getToken } = useGetToken(
+    slackClientId,
+    slackClientSecret
+  );
   const router = useRouter();
 
   useEffect(() => {
+    // Prevent users from landing on "/login"
+    // when they are already logged in.
     (async function () {
       if (!isLoading && user?.ok) {
         router.replace("/");
@@ -50,11 +51,10 @@ export default function Login({
     })();
   }, [isLoading, user]);
 
-  const getAccessToken = async (code: string) => {
-    const token = await getToken(code, slackClientId, slackClientSecret);
-    setToken(token);
+  const getTokenCallback = useCallback(async (code: string) => {
+    await getToken({ code });
     router.replace("/");
-  };
+  }, []);
 
   return (
     <div>
@@ -74,7 +74,7 @@ export default function Login({
           <SlackLoginButton
             slackClientId={slackClientId}
             slackUserScopes={slackUserScopes}
-            onSuccess={getAccessToken}
+            onSuccess={getTokenCallback}
             onFailure={setError}
           />
           {error && (

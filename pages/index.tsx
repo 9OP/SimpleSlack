@@ -11,9 +11,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useContext } from "react";
 import { MemberIcon } from "../components/icons";
-import { AppContext } from "../lib/context";
 import { useGetChannels } from "../lib/hooks";
 import { Channel } from "../lib/models";
 
@@ -62,8 +60,7 @@ const ListChannels = ({ channels }: { channels: Channel[] }) => {
 };
 
 export default function Home() {
-  const { token } = useContext(AppContext);
-  const { data, isLoading } = useGetChannels(token?.entity);
+  const { data, isLoading } = useGetChannels();
 
   if (isLoading) {
     return <Box>Loading channels...</Box>;
