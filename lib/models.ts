@@ -4,3 +4,9 @@ export interface Channel {
   created: Date;
   numMembers: number;
 }
+
+export interface Message {
+  ts: Date;
+  userId: string;
+  text: string;
+}

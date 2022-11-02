@@ -88,7 +88,7 @@ export default function Home() {
       >
         Channels
       </Heading>
-      <ListChannels channels={data?.channels || []} />
+      <ListChannels channels={Object.values(data?.channels || [])} />
     </Box>
   );
 }

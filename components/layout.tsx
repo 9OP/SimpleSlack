@@ -12,8 +12,9 @@ export default function Layout({ children }: { children: JSX.Element }) {
       </Box> */}
       <Box
         w={{ base: "100%", sm: "80%", md: "70%", lg: "60%" }}
+        height="100%"
         margin="auto"
-        marginTop="2rem"
+        padding="2rem"
       >
         {children}
       </Box>

@@ -1,4 +1,4 @@
-import { Channel } from "./models";
+import { Channel, Message } from "./models";
 
 export const getToken = async (
   code: string,
@@ -55,7 +55,7 @@ export const whoami = async (
 
 export const getChannels = async (
   token: string
-): Promise<{ channels: Channel[]; ok: boolean }> => {
+): Promise<{ channels: { [id: string]: Channel }; ok: boolean }> => {
   const res = await fetch("https://slack.com/api/conversations.list", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -83,28 +83,69 @@ export const getChannels = async (
   }
   */
   const ok = data["ok"] || false;
-  const channels: Channel[] = data?.["channels"].map((chan: any) => {
-    const channel: Channel = {
-      id: chan["id"],
-      name: chan["name"],
-      created: new Date(chan["created"] * 1000),
-      numMembers: chan["num_members"],
-    };
-    return channel;
-  });
+  const channels: { [id: string]: Channel } = data?.["channels"].reduce(
+    (acc: { [id: string]: Channel }, chan: any) => {
+      const channel: Channel = {
+        id: chan["id"],
+        name: chan["name"],
+        created: new Date(chan["created"] * 1000),
+        numMembers: chan["num_members"],
+      };
+      acc[channel.id] = channel;
+      return acc;
+    },
+    {}
+  );
   return { channels, ok };
 };
 
 export const getChannelHistory = async (
   token: string,
   channelId: string
-): Promise<any> => {
+): Promise<{ messages: Message[]; ok: boolean }> => {
   const res = await fetch("https://slack.com/api/conversations.history", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: `token=${token}&channel=${channelId}`,
   });
   const data = await res.json();
-  console.log(data);
-  return data;
+  /* data format:
+  {
+    "ok": true,
+    "messages": [
+        {
+            "client_msg_id": "de715669-ffee-48f5-b2c5-21a233d6cef3",
+            "type": "message",
+            "text": "Test 2",
+            "user": "U048TJ8GYSJ",
+            "ts": "1667318159.186929",
+            "team": "T048X7V518V",
+            ...
+        },
+        {
+            "type": "message",
+            "subtype": "channel_join",
+            "ts": "1667318135.247109",
+            "user": "U048TJ8GYSJ",
+            "text": "<@U048TJ8GYSJ> has joined the channel"
+        },
+        ...
+    ],
+    "has_more": false,
+    "is_limited": false,
+    "pin_count": 0,
+    "channel_actions_ts": null,
+    "channel_actions_count": 0
+  }
+  */
+  const ok = data["ok"] || false;
+  const messages: Message[] = data["messages"].map((mess: any) => {
+    const message: Message = {
+      ts: new Date(mess["ts"] * 1000),
+      userId: mess["user"],
+      text: mess["text"],
+    };
+    return message;
+  });
+  return { messages, ok };
 };
