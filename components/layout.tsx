@@ -2,7 +2,12 @@ import { Box } from "@chakra-ui/react";
 
 export default function Layout({ children }: { children: JSX.Element }) {
   return (
-    <Box>
+    <Box
+      height="100vh"
+      w={{ base: "100%", sm: "80%", md: "70%", lg: "60%" }}
+      margin="auto"
+      padding="2rem"
+    >
       {/* <Box marginBottom="2rem" width="100%" padding="2rem">
         <Link href="/">
           <Text fontSize="xl" fontWeight="bold" color="gray.600">
@@ -10,14 +15,8 @@ export default function Layout({ children }: { children: JSX.Element }) {
           </Text>
         </Link>
       </Box> */}
-      <Box
-        w={{ base: "100%", sm: "80%", md: "70%", lg: "60%" }}
-        height="100%"
-        margin="auto"
-        padding="2rem"
-      >
-        {children}
-      </Box>
+
+      {children}
     </Box>
   );
 }

@@ -8,6 +8,8 @@ import {
   ListItem,
   Button,
   Textarea,
+  Grid,
+  Flex,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -85,7 +87,7 @@ function Channel() {
   }, []);
 
   return (
-    <Box>
+    <Box height="90%">
       <VStack alignItems="flex-start" spacing="0">
         <Link href="/">
           <HStack
@@ -101,17 +103,14 @@ function Channel() {
         <Heading>{channel?.name}</Heading>
       </VStack>
 
-      <Box
-        height="100%"
-        display="flex"
-        flexDirection="column"
-        justifyContent="space-between"
-      >
-        <ListMessages
-          messages={historyData?.messages || []}
-          members={membersData?.members || {}}
-        />
-        <VStack w="100%">
+      <Flex flexDirection="column" justifyContent="space-between" height="90%">
+        <Box  overflow="scroll">
+          <ListMessages
+            messages={historyData?.messages || []}
+            members={membersData?.members || {}}
+          />
+        </Box>
+        <VStack w="100%" height="fit-content">
           <Button
             colorScheme="blue"
             variant="outline"
@@ -122,7 +121,7 @@ function Channel() {
           </Button>
           <Textarea value={message} onChange={onMessageChange}></Textarea>
         </VStack>
-      </Box>
+      </Flex>
     </Box>
   );
 }
