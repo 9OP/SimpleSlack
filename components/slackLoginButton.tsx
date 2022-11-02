@@ -72,7 +72,7 @@ const SlackLoginButton = ({
             }
           }
         }
-      } catch {
+      } catch (err) {
         // The popup window has domain "slack.com", browser prevent
         // javascript running on localhost to access the location.hostname of the popup
         // It raises `DOMException: Blocked a frame with origin from accessing a cross-origin frame.`
@@ -80,6 +80,7 @@ const SlackLoginButton = ({
         // As long as the popup window is the slack oauth consent screen page, the polling is failing.
         // Once the user accept the consent screen, the popup windows redirect to "http://localhost:3000"
         // with a code in query parameter. This code is necessay to request the access token for the user.
+        console.error(err)
       }
     }, 500);
   }
