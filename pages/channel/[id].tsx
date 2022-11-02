@@ -18,6 +18,7 @@ import {
   useGetChannelHistory,
   useGetChannels,
   useGetMembers,
+  useSendMessage,
 } from "../../lib/hooks";
 import { Member, Message } from "../../lib/models";
 
@@ -28,9 +29,13 @@ function ListMessages({
   messages: Message[];
   members: { [id: string]: Member };
 }) {
+  const sortedMessages = useMemo(() => {
+    return messages.sort((a, b) => b.ts.getTime() - a.ts.getTime());
+  }, [messages]);
+
   return (
     <List>
-      {messages.map((message, i) => (
+      {sortedMessages.map((message, i) => (
         <ListItem key={i}>
           <Box
             borderRadius="6px"
@@ -63,6 +68,7 @@ export default function Channel() {
   const { data: membersData } = useGetMembers(token.entity);
   const { data: channelsData } = useGetChannels(token.entity);
   const { data: historyData } = useGetChannelHistory(token.entity, id);
+  const { mutateAsync: sendMessage } = useSendMessage(token.entity, id);
   const [message, setMessage] = useState("");
 
   const channel = useMemo(() => {
@@ -97,7 +103,12 @@ export default function Channel() {
           members={membersData?.members || {}}
         />
         <VStack w="100%">
-          <Button colorScheme="blue" variant="outline" w="100%">
+          <Button
+            colorScheme="blue"
+            variant="outline"
+            w="100%"
+            onClick={() => sendMessage({ message })}
+          >
             Send message
           </Button>
           <Textarea

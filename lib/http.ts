@@ -215,3 +215,41 @@ export const getMembers = async (
   );
   return { members, ok };
 };
+
+export const sendMessage = async (
+  token: string,
+  channelId: string,
+  message: string
+): Promise<{ ok: boolean }> => {
+  const res = await fetch("https://slack.com/api/chat.postMessage", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `token=${token}&channel=${channelId}&text=${message}`,
+  });
+  const data = await res.json();
+  /* https://api.slack.com/methods/chat.postMessage
+  Data format:
+  {
+    "ok": true,
+    "channel": "C123456",
+    "ts": "1503435956.000247",
+    "message": {
+        "text": "Here's a message for you",
+        "username": "ecto1",
+        "bot_id": "B123456",
+        "attachments": [
+            {
+                "text": "This is an attachment",
+                "id": 1,
+                "fallback": "This is an attachment's fallback"
+            }
+        ],
+        "type": "message",
+        "subtype": "bot_message",
+        "ts": "1503435956.000247"
+    }
+  }  
+  */
+  const ok = data["ok"] || false;
+  return { ok };
+};
