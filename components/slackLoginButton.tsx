@@ -9,6 +9,7 @@ interface props {
   onSuccess: (code: string) => void;
   onFailure: (err: string) => void;
 }
+// ttps://simple-slack-capsule.slack.com/oauth?client_id=4303267171301.4291836059239&scope=users%3Aread+channels%3Aread+channels%3Ahistory+chat%3Awrite%3Auser&user_scope=&redirect_uri=9op.github.io&state=&granular_bot_scope=0&single_channel=0&install_redirect=&tracked=1&team=
 
 const SlackLoginButton = ({
   slackClientId,
@@ -22,7 +23,7 @@ const SlackLoginButton = ({
     const left = screen.width / 2 - width / 2;
     const top = screen.height / 2 - height / 2;
 
-    const url = `https://slack.com/oauth/authorize/?client_id=${slackClientId}&scope=${slackUserScopes}&redirect_uri=${window.location.host}`;
+    const url = `https://slack.com/oauth/authorize/?client_id=${slackClientId}&scope=${slackUserScopes}&redirect_uri=${window.location.origin}`;
 
     return window.open(
       url,
